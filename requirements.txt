@@ -1,0 +1,9 @@
+flask
+flask_sqlalchemy
+flask_login
+pandas
+numpy
+scikit-learn
+nltk
+matplotlib
+werkzeug

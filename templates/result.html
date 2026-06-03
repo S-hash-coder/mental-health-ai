@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Assessment Result{% endblock %}
+
+{% block content %}
+<div class="result-page">
+
+  <div class="result-card result-{{ resp.risk_score }}">
+    <div class="result-header">
+      <div class="result-icon">
+        {% if resp.risk_score == 0 %}💚{% elif resp.risk_score == 1 %}🟡{% else %}🔴{% endif %}
+      </div>
+      <h1>Your Mental Health Risk Level</h1>
+      <div class="risk-level-badge badge-{{ resp.risk_score }}">
+        {{ resp.risk_level }} Risk
+      </div>
+      <p class="result-date">Assessment on {{ resp.submitted_at.strftime('%d %B %Y at %H:%M') }}</p>
+    </div>
+
+    <!-- Metrics -->
+    <div class="result-metrics">
+      <div class="rm-item">
+        <span class="rm-icon">😴</span>
+        <span class="rm-label">Sleep</span>
+        <span class="rm-val">{{ resp.sleep_hours }} hrs</span>
+      </div>
+      <div class="rm-item">
+        <span class="rm-icon">😤</span>
+        <span class="rm-label">Stress</span>
+        <span class="rm-val">{{ resp.stress_level }}/10</span>
+      </div>
+      <div class="rm-item">
+        <span class="rm-icon">📚</span>
+        <span class="rm-label">Pressure</span>
+        <span class="rm-val">{{ resp.study_pressure }}/10</span>
+      </div>
+      <div class="rm-item">
+        <span class="rm-icon">😰</span>
+        <span class="rm-label">Anxiety</span>
+        <span class="rm-val">{{ resp.social_anxiety }}/10</span>
+      </div>
+      <div class="rm-item">
+        <span class="rm-icon">😊</span>
+        <span class="rm-label">Mood</span>
+        <span class="rm-val">{{ resp.mood_score }}/10</span>
+      </div>
+    </div>
+
+    <!-- Radar Chart -->
+    <canvas id="radarChart" class="radar-chart"></canvas>
+
+    <!-- Recommendation -->
+    <div class="recommendation-box">
+      <h2>💡 Recommendation</h2>
+      <p>{{ resp.recommendation }}</p>
+    </div>
+
+    {% if resp.feelings_text %}
+    <div class="feelings-box">
+      <h3>Your feelings note:</h3>
+      <blockquote>{{ resp.feelings_text }}</blockquote>
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div class="result-actions">
+      <a href="{{ url_for('questionnaire') }}" class="btn-secondary">Retake Assessment</a>
+      <a href="{{ url_for('appointments') }}" class="btn-primary">Book Counseling →</a>
+      <a href="{{ url_for('chatbot') }}" class="btn-secondary">Talk to MindBot</a>
+    </div>
+  </div>
+
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('radarChart').getContext('2d');
+new Chart(ctx, {
+  type: 'radar',
+  data: {
+    labels: ['Sleep (inv)', 'Stress', 'Study Pressure', 'Social Anxiety', 'Mood (inv)'],
+    datasets: [{
+      label: 'Your Scores',
+      data: [
+        {{ (12 - resp.sleep_hours) / 12 * 10 | round(1) }},
+        {{ resp.stress_level }},
+        {{ resp.study_pressure }},
+        {{ resp.social_anxiety }},
+        {{ 10 - resp.mood_score }}
+      ],
+      backgroundColor: '{% if resp.risk_score == 0 %}rgba(52,211,153,0.2){% elif resp.risk_score == 1 %}rgba(251,191,36,0.2){% else %}rgba(248,113,113,0.2){% endif %}',
+      borderColor: '{% if resp.risk_score == 0 %}#34d399{% elif resp.risk_score == 1 %}#fbbf24{% else %}#f87171{% endif %}',
+      pointBackgroundColor: '{% if resp.risk_score == 0 %}#34d399{% elif resp.risk_score == 1 %}#fbbf24{% else %}#f87171{% endif %}',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: { r: { min: 0, max: 10, ticks: { color: '#94a3b8', stepSize: 2 }, pointLabels: { color: '#e2e8f0' }, grid: { color: 'rgba(148,163,184,0.2)' } } },
+    plugins: { legend: { labels: { color: '#e2e8f0' } } }
+  }
+});
+</script>
+{% endblock %}
+{% endblock %}

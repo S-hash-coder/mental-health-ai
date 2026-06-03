@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🎓 Designed for Students</div>
+    <h1 class="hero-title">Your <span class="gradient-text">Mental Health</span><br>Matters</h1>
+    <p class="hero-subtitle">
+      A smart AI-powered platform to assess your mental wellbeing,
+      get personalized recommendations, and connect with professional counselors.
+    </p>
+    <div class="hero-actions">
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('questionnaire') }}" class="btn-primary">Take Assessment →</a>
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary">My Dashboard</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="btn-primary">Get Started Free →</a>
+        <a href="{{ url_for('login') }}" class="btn-secondary">Login</a>
+      {% endif %}
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">AI</span>
+        <span class="stat-label">Powered Risk Assessment</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">3+</span>
+        <span class="stat-label">Expert Counselors</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">24/7</span>
+        <span class="stat-label">MindBot Support</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="visual-card card-float">
+      <div class="vc-icon">😴</div>
+      <div class="vc-text">Sleep Quality</div>
+      <div class="vc-bar"><div class="vc-fill" style="width:75%"></div></div>
+    </div>
+    <div class="visual-card card-float-delay">
+      <div class="vc-icon">🧘</div>
+      <div class="vc-text">Stress Level</div>
+      <div class="vc-bar"><div class="vc-fill warning" style="width:45%"></div></div>
+    </div>
+    <div class="visual-card card-float">
+      <div class="vc-icon">💚</div>
+      <div class="vc-text">Overall Wellbeing</div>
+      <div class="vc-bar"><div class="vc-fill success" style="width:82%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+  <div class="section-header">
+    <h2>Everything You Need to Support Your Mental Health</h2>
+    <p>Built with care for students navigating academic and personal challenges.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="fc-icon">🤖</div>
+      <h3>AI Risk Assessment</h3>
+      <p>Answer a short questionnaire. Our machine learning model instantly classifies your mental health risk level.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">📊</div>
+      <h3>Personal Dashboard</h3>
+      <p>Track your wellbeing over time with visual charts showing how your mental health evolves.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">💬</div>
+      <h3>MindBot Chatbot</h3>
+      <p>Talk to MindBot anytime. Get instant, empathetic responses and coping strategies.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">📅</div>
+      <h3>Book Appointments</h3>
+      <p>Connect with professional counselors and psychologists directly through our booking system.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🔒</div>
+      <h3>Private & Secure</h3>
+      <p>Your data is encrypted and private. Only you and your assigned counselor can see your records.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">💡</div>
+      <h3>Smart Recommendations</h3>
+      <p>Receive personalized mental health tips and action plans based on your specific assessment results.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+  <div class="section-header">
+    <h2>How It Works</h2>
+    <p>Three simple steps to better mental health support.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Create Account</h3>
+      <p>Register with your student email to get started.</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Take Assessment</h3>
+      <p>Answer 5 questions about your sleep, stress, and mood.</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Get Support</h3>
+      <p>Receive your risk level, recommendations, and connect with counselors.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

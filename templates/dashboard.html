@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+
+  <!-- Welcome Banner -->
+  <div class="dash-welcome">
+    <div>
+      <h1>Welcome back, <span class="gradient-text">{{ current_user.name }}</span> 👋</h1>
+      <p>Here's your mental health overview.</p>
+    </div>
+    <a href="{{ url_for('questionnaire') }}" class="btn-primary">New Assessment →</a>
+  </div>
+
+  <!-- Latest Risk Card -->
+  {% if latest %}
+  <div class="risk-banner risk-{{ latest.risk_score }}">
+    <div class="risk-info">
+      <span class="risk-badge badge-{{ latest.risk_score }}">{{ latest.risk_level }} Risk</span>
+      <h2>Your Latest Assessment</h2>
+      <p>{{ latest.recommendation }}</p>
+      <small>Submitted: {{ latest.submitted_at.strftime('%d %b %Y, %H:%M') }}</small>
+    </div>
+    <div class="risk-metrics">
+      <div class="metric"><span class="m-val">{{ latest.sleep_hours }}h</span><span class="m-label">Sleep</span></div>
+      <div class="metric"><span class="m-val">{{ latest.stress_level }}/10</span><span class="m-label">Stress</span></div>
+      <div class="metric"><span class="m-val">{{ latest.mood_score }}/10</span><span class="m-label">Mood</span></div>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="es-icon">📋</div>
+    <h2>No Assessments Yet</h2>
+    <p>Take your first mental health assessment to see your risk level and get recommendations.</p>
+    <a href="{{ url_for('questionnaire') }}" class="btn-primary">Start Assessment →</a>
+  </div>
+  {% endif %}
+
+  <!-- Quick Actions -->
+  <div class="dash-grid">
+    <a href="{{ url_for('questionnaire') }}" class="dash-card">
+      <div class="dc-icon">🧠</div>
+      <h3>Mental Assessment</h3>
+      <p>Evaluate your current mental health status</p>
+    </a>
+    <a href="{{ url_for('chatbot') }}" class="dash-card">
+      <div class="dc-icon">💬</div>
+      <h3>Talk to MindBot</h3>
+      <p>Get support and coping strategies anytime</p>
+    </a>
+    <a href="{{ url_for('appointments') }}" class="dash-card">
+      <div class="dc-icon">📅</div>
+      <h3>Book Appointment</h3>
+      <p>Connect with a professional counselor</p>
+    </a>
+  </div>
+
+  <!-- History Table -->
+  {% if responses %}
+  <div class="history-section">
+    <h2>Assessment History</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Sleep</th>
+            <th>Stress</th>
+            <th>Pressure</th>
+            <th>Anxiety</th>
+            <th>Mood</th>
+            <th>Risk Level</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in responses %}
+          <tr>
+            <td>{{ r.submitted_at.strftime('%d %b %Y') }}</td>
+            <td>{{ r.sleep_hours }}h</td>
+            <td>{{ r.stress_level }}/10</td>
+            <td>{{ r.study_pressure }}/10</td>
+            <td>{{ r.social_anxiety }}/10</td>
+            <td>{{ r.mood_score }}/10</td>
+            <td><span class="badge badge-{{ r.risk_score }}">{{ r.risk_level }}</span></td>
+            <td><a href="{{ url_for('result', response_id=r.id) }}" class="link-btn">View →</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recent Appointments -->
+  {% if appointments %}
+  <div class="history-section">
+    <h2>Recent Appointments</h2>
+    <div class="appt-list">
+      {% for a in appointments %}
+      <div class="appt-item">
+        <div class="appt-icon">📅</div>
+        <div class="appt-info">
+          <strong>{{ a.doctor.name }}</strong>
+          <span>{{ a.date }} at {{ a.time_slot }}</span>
+        </div>
+        <span class="appt-status status-{{ a.status.lower() }}">{{ a.status }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Progress chart if there are multiple responses
+{% if responses|length > 1 %}
+const labels = [{% for r in responses|reverse %}"{{ r.submitted_at.strftime('%d %b') }}"{% if not loop.last %},{% endif %}{% endfor %}];
+const stressData = [{% for r in responses|reverse %}{{ r.stress_level }}{% if not loop.last %},{% endif %}{% endfor %}];
+const moodData   = [{% for r in responses|reverse %}{{ r.mood_score }}{% if not loop.last %},{% endif %}{% endfor %}];
+
+const ctx = document.getElementById('trendChart');
+if(ctx){
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Stress Level', data: stressData, borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.1)', tension: 0.4, fill: true },
+        { label: 'Mood Score',   data: moodData,   borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,0.1)',  tension: 0.4, fill: true }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { labels: { color: '#e2e8f0' } } },
+      scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' }, min: 0, max: 10 } }
+    }
+  });
+}
+{% endif %}
+</script>
+
+{% if responses|length > 1 %}
+<div class="history-section">
+  <h2>Wellbeing Trends</h2>
+  <canvas id="trendChart" height="100"></canvas>
+</div>
+{% endif %}
+{% endblock %}
+{% endblock %}

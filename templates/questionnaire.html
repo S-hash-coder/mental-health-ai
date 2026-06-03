@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Mental Health Assessment{% endblock %}
+
+{% block content %}
+<div class="form-page">
+  <div class="form-header">
+    <h1>🧠 Mental Health Assessment</h1>
+    <p>Answer honestly — your responses are private and used only to help you.</p>
+  </div>
+
+  <form method="POST" class="assessment-form" id="assessment-form">
+
+    <!-- Sleep Hours -->
+    <div class="q-card">
+      <div class="q-num">Q1</div>
+      <label for="sleep_hours">How many hours of sleep did you get last night?</label>
+      <div class="range-group">
+        <input type="range" id="sleep_hours" name="sleep_hours"
+               min="1" max="12" step="0.5" value="7"
+               oninput="document.getElementById('sleep_val').textContent = this.value + ' hrs'"/>
+        <span class="range-val" id="sleep_val">7 hrs</span>
+      </div>
+      <div class="range-labels"><span>1hr</span><span>6hrs</span><span>12hrs</span></div>
+    </div>
+
+    <!-- Stress Level -->
+    <div class="q-card">
+      <div class="q-num">Q2</div>
+      <label for="stress_level">Rate your current stress level (1 = Very Calm, 10 = Extremely Stressed)</label>
+      <div class="scale-buttons" id="stress_group">
+        {% for i in range(1, 11) %}
+        <button type="button" class="scale-btn {% if i == 5 %}selected{% endif %}"
+                data-field="stress_level" data-val="{{ i }}" onclick="selectScale(this, 'stress_level')">{{ i }}</button>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="stress_level" name="stress_level" value="5"/>
+    </div>
+
+    <!-- Study Pressure -->
+    <div class="q-card">
+      <div class="q-num">Q3</div>
+      <label for="study_pressure">Rate your academic/study pressure (1 = No Pressure, 10 = Overwhelming)</label>
+      <div class="scale-buttons" id="pressure_group">
+        {% for i in range(1, 11) %}
+        <button type="button" class="scale-btn {% if i == 5 %}selected{% endif %}"
+                data-field="study_pressure" data-val="{{ i }}" onclick="selectScale(this, 'study_pressure')">{{ i }}</button>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="study_pressure" name="study_pressure" value="5"/>
+    </div>
+
+    <!-- Social Anxiety -->
+    <div class="q-card">
+      <div class="q-num">Q4</div>
+      <label for="social_anxiety">Rate your social anxiety level (1 = Very Comfortable, 10 = Severe Anxiety)</label>
+      <div class="scale-buttons" id="anxiety_group">
+        {% for i in range(1, 11) %}
+        <button type="button" class="scale-btn {% if i == 3 %}selected{% endif %}"
+                data-field="social_anxiety" data-val="{{ i }}" onclick="selectScale(this, 'social_anxiety')">{{ i }}</button>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="social_anxiety" name="social_anxiety" value="3"/>
+    </div>
+
+    <!-- Mood Score -->
+    <div class="q-card">
+      <div class="q-num">Q5</div>
+      <label for="mood_score">Rate your overall mood today (1 = Very Low, 10 = Excellent)</label>
+      <div class="scale-buttons" id="mood_group">
+        {% for i in range(1, 11) %}
+        <button type="button" class="scale-btn {% if i == 6 %}selected{% endif %}"
+                data-field="mood_score" data-val="{{ i }}" onclick="selectScale(this, 'mood_score')">{{ i }}</button>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="mood_score" name="mood_score" value="6"/>
+    </div>
+
+    <!-- Open Feelings -->
+    <div class="q-card">
+      <div class="q-num">Q6</div>
+      <label for="feelings_text">How are you feeling right now? <span class="optional">(Optional)</span></label>
+      <textarea id="feelings_text" name="feelings_text" rows="4"
+                placeholder="Share anything you'd like — your thoughts, worries, or feelings..."></textarea>
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="btn-primary btn-large" id="submit-btn">
+        🧠 Analyze My Mental Health
+      </button>
+      <p class="submit-note">Your responses are private and securely stored.</p>
+    </div>
+
+  </form>
+</div>
+
+{% block scripts %}
+<script>
+function selectScale(btn, field) {
+  document.querySelectorAll(`[data-field="${field}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById(field).value = btn.dataset.val;
+}
+document.getElementById('assessment-form').addEventListener('submit', function() {
+  const sb = document.getElementById('submit-btn');
+  sb.textContent = '⏳ Analyzing...';
+  sb.disabled = true;
+});
+</script>
+{% endblock %}
+{% endblock %}

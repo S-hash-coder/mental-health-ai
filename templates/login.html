@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon">🧠</div>
+      <h1>Welcome Back</h1>
+      <p>Sign in to access your mental health dashboard</p>
+    </div>
+    <form method="POST" class="auth-form" id="login-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="you@university.edu"
+               required autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••"
+               required autocomplete="current-password"/>
+      </div>
+      <button type="submit" class="btn-primary btn-full">Sign In →</button>
+    </form>
+    <div class="auth-footer">
+      <p>Don't have an account? <a href="{{ url_for('register') }}">Create one free</a></p>
+    </div>
+    <div class="auth-demo">
+      <p class="demo-label">Demo Accounts</p>
+      <code>admin@mhsystem.com / admin123</code>
+    </div>
+  </div>
+</div>
+{% endblock %}

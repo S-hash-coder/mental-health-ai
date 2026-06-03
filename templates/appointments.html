@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="appt-page">
+  <div class="page-header">
+    <h1>📅 Book an Appointment</h1>
+    <p>Connect with real psychiatrists and mental health centers in Hyderabad.</p>
+  </div>
+
+  <div class="appt-layout">
+
+    <!-- Doctors/Hospitals List -->
+    <div class="doctors-section">
+      <h2>Psychiatrists & Mental Health Centers</h2>
+      <p class="section-sub">All listings are real verified contacts in Hyderabad.</p>
+      <div class="doctors-grid">
+        {% for doc in doctors %}
+        <div class="doctor-card" onclick="selectDoctor({{ doc.id }}, '{{ doc.name }}')">
+          <div class="doc-avatar">{{ doc.name[0] }}</div>
+          <div class="doc-info">
+            <h3>{{ doc.name }}</h3>
+            <p class="doc-spec">🏥 {{ doc.specialization }}</p>
+            {% if doc.location %}
+            <p class="doc-location">📍 {{ doc.location }}</p>
+            {% endif %}
+            <p class="doc-days">🗓 {{ doc.available_days }}</p>
+            <p class="doc-phone">📞 <a href="tel:{{ doc.phone }}" onclick="event.stopPropagation()">{{ doc.phone }}</a></p>
+            {% if doc.email %}
+            <p class="doc-email">✉ <a href="mailto:{{ doc.email }}" onclick="event.stopPropagation()">{{ doc.email }}</a></p>
+            {% endif %}
+            {% if doc.about %}
+            <p class="doc-about">{{ doc.about }}</p>
+            {% endif %}
+          </div>
+          <div class="doc-select-indicator" id="doc-check-{{ doc.id }}">✓</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="booking-form-section">
+      <h2>Book a Session</h2>
+      <form method="POST" class="booking-form" id="booking-form">
+        <input type="hidden" id="doctor_id" name="doctor_id" value=""/>
+
+        <div class="selected-doctor" id="selected-doc-display">
+          <p>👆 Select a doctor or center from the list first</p>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Preferred Date</label>
+          <input type="date" id="date" name="date" required/>
+        </div>
+
+        <div class="form-group">
+          <label for="time_slot">Preferred Time Slot</label>
+          <select id="time_slot" name="time_slot" required>
+            <option value="">— Select a time slot —</option>
+            <option value="09:00 AM">09:00 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="01:00 PM">01:00 PM</option>
+            <option value="02:00 PM">02:00 PM</option>
+            <option value="03:00 PM">03:00 PM</option>
+            <option value="04:00 PM">04:00 PM</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reason">Reason for Visit <span class="optional">(Optional)</span></label>
+          <textarea id="reason" name="reason" rows="3"
+                    placeholder="Brief description of what you'd like to discuss..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary btn-full">Confirm Appointment →</button>
+
+        <div class="booking-note">
+          <p>⚠️ <strong>Note:</strong> This system records your booking request.
+          Please also call the center directly to confirm your slot.</p>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Emergency / Helpline Banner -->
+  <div class="helpline-banner">
+    <div class="hl-icon">🆘</div>
+    <div class="hl-text">
+      <strong>Mental Health Helplines — Available 24/7</strong>
+      <p>iCall: <a href="tel:9152987821">9152987821</a> &nbsp;|&nbsp;
+         Vandrevala Foundation: <a href="tel:18602662345">1860-2662-345</a> &nbsp;|&nbsp;
+         NIMHANS: <a href="tel:08046110007">080-46110007</a></p>
+    </div>
+  </div>
+
+  <!-- My Appointments -->
+  {% if my_appointments %}
+  <div class="history-section">
+    <h2>My Appointments</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Doctor / Center</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for a in my_appointments %}
+          <tr>
+            <td>{{ a.doctor.name }}</td>
+            <td>{{ a.date }}</td>
+            <td>{{ a.time_slot }}</td>
+            <td>{{ a.reason or '—' }}</td>
+            <td><span class="appt-status status-{{ a.status.lower() }}">{{ a.status }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% block scripts %}
+<script>
+document.getElementById('date').min = new Date().toISOString().split('T')[0];
+
+const doctorCards = document.querySelectorAll('.doctor-card');
+
+function selectDoctor(id, name) {
+  doctorCards.forEach(c => c.classList.remove('doc-selected'));
+  document.querySelectorAll('[id^="doc-check-"]').forEach(c => c.style.display = 'none');
+  document.getElementById('doctor_id').value = id;
+
+  // Find and highlight the clicked card
+  doctorCards.forEach((card, idx) => {
+    if (card.querySelector(`#doc-check-${id}`)) {
+      card.classList.add('doc-selected');
+    }
+  });
+
+  const checkEl = document.getElementById(`doc-check-${id}`);
+  if (checkEl) checkEl.style.display = 'flex';
+
+  document.getElementById('selected-doc-display').innerHTML =
+    `<p>✅ Selected: <strong>${name}</strong> — Fill in date and time below.</p>`;
+}
+</script>
+{% endblock %}
+{% endblock %}

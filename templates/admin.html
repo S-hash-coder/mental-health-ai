@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <div class="page-header">
+    <h1>⚙ Admin Dashboard</h1>
+    <p>Overview of all student mental health data.</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="sc-icon" style="background:rgba(99,102,241,0.2);color:#818cf8">👥</div>
+      <div class="sc-data">
+        <span class="sc-num">{{ total_users }}</span>
+        <span class="sc-label">Total Students</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:rgba(59,130,246,0.2);color:#60a5fa">📋</div>
+      <div class="sc-data">
+        <span class="sc-num">{{ total_responses }}</span>
+        <span class="sc-label">Assessments Done</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:rgba(248,113,113,0.2);color:#f87171">🔴</div>
+      <div class="sc-data">
+        <span class="sc-num">{{ high_risk }}</span>
+        <span class="sc-label">High Risk Students</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:rgba(251,191,36,0.2);color:#fbbf24">🟡</div>
+      <div class="sc-data">
+        <span class="sc-num">{{ medium_risk }}</span>
+        <span class="sc-label">Medium Risk</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:rgba(52,211,153,0.2);color:#34d399">💚</div>
+      <div class="sc-data">
+        <span class="sc-num">{{ low_risk }}</span>
+        <span class="sc-label">Low Risk</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:rgba(168,85,247,0.2);color:#c084fc">📅</div>
+      <div class="sc-data">
+        <span class="sc-num">{{ total_appts }}</span>
+        <span class="sc-label">Appointments</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Risk Level Distribution</h3>
+      <canvas id="doughnutChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Assessment Volume</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent Responses Table -->
+  <div class="history-section">
+    <h2>Recent Assessments</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Student</th><th>Date</th><th>Sleep</th><th>Stress</th><th>Mood</th><th>Risk</th></tr>
+        </thead>
+        <tbody>
+          {% for r in recent_responses %}
+          <tr>
+            <td>{{ r.user.name }}</td>
+            <td>{{ r.submitted_at.strftime('%d %b %Y') }}</td>
+            <td>{{ r.sleep_hours }}h</td>
+            <td>{{ r.stress_level }}/10</td>
+            <td>{{ r.mood_score }}/10</td>
+            <td><span class="badge badge-{{ r.risk_score }}">{{ r.risk_level }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- All Users -->
+  <div class="history-section">
+    <h2>All Registered Students</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Assessments</th><th>Joined</th><th>Admin</th></tr>
+        </thead>
+        <tbody>
+          {% for u in all_users %}
+          <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.responses|length }}</td>
+            <td>{{ u.created_at.strftime('%d %b %Y') }}</td>
+            <td>{% if u.is_admin %}✅{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Doughnut Chart - Risk Distribution
+new Chart(document.getElementById('doughnutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+    datasets: [{
+      data: [{{ low_risk }}, {{ medium_risk }}, {{ high_risk }}],
+      backgroundColor: ['rgba(52,211,153,0.8)', 'rgba(251,191,36,0.8)', 'rgba(248,113,113,0.8)'],
+      borderColor: ['#34d399', '#fbbf24', '#f87171'],
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#e2e8f0' } } }
+  }
+});
+
+// Bar Chart - placeholder for assessment volume
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Low', 'Medium', 'High'],
+    datasets: [{
+      label: 'Students',
+      data: [{{ low_risk }}, {{ medium_risk }}, {{ high_risk }}],
+      backgroundColor: ['rgba(52,211,153,0.6)', 'rgba(251,191,36,0.6)', 'rgba(248,113,113,0.6)'],
+      borderColor: ['#34d399', '#fbbf24', '#f87171'],
+      borderWidth: 2,
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#e2e8f0' } } },
+    scales: {
+      x: { ticks: { color: '#94a3b8' } },
+      y: { ticks: { color: '#94a3b8', stepSize: 1 }, beginAtZero: true }
+    }
+  }
+});
+</script>
+{% endblock %}
+{% endblock %}
