@@ -61,6 +61,33 @@
     </div>
     {% endif %}
 
+    <!-- Recommended Doctors -->
+    <div class="recommended-doctors-section">
+      <h3>👨‍⚕️ Recommended Doctors for You</h3>
+      <p class="section-sub">AI-recommended psychiatrists matched to your risk level and conditions</p>
+      <div class="rec-doctors-list">
+        {% for doc in recommended_doctors %}
+        <div class="rec-doctor-card">
+          <div class="doc-avatar">{{ doc.name[0] }}</div>
+          <div class="doc-info text-left">
+            <h4>{{ doc.name }}</h4>
+            <p class="doc-spec">{{ doc.specialization }}</p>
+            <p class="doc-rating">⭐ {{ doc.rating }} • {{ doc.experience_years }} Years Exp</p>
+            <p class="doc-location">📍 {{ doc.location }}</p>
+            {% if doc.tags %}
+            <div class="doc-tags">
+              {% for tag in doc.tags.split(',') %}
+              <span class="tag-badge">{{ tag.strip() }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('appointments') }}" class="btn-nav-primary select-book-btn">Select & Book</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
     <!-- Actions -->
     <div class="result-actions">
       <a href="{{ url_for('questionnaire') }}" class="btn-secondary">Retake Assessment</a>

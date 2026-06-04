@@ -79,6 +79,9 @@ class Doctor(db.Model):
     phone         = db.Column(db.String(50))
     email         = db.Column(db.String(120))
     about         = db.Column(db.Text)
+    rating        = db.Column(db.Float, default=4.0)
+    tags          = db.Column(db.String(200))  # e.g. "anxiety,depression,stress"
+    experience_years = db.Column(db.Integer, default=5)
     appointments  = db.relationship('Appointment', backref='doctor', lazy=True)
 
 
@@ -153,6 +156,39 @@ def predict_risk(sleep, stress, pressure, anxiety, mood):
     features = [[float(sleep), float(stress), float(pressure), float(anxiety), float(mood)]]
     pred = int(model.predict(features)[0])
     return pred, RISK_LABELS[pred], RECOMMENDATIONS[pred]
+
+
+def recommend_doctors(risk_score, user_location=None):
+    doctors = Doctor.query.all()
+
+    scored = []
+
+    for doc in doctors:
+        score = 0
+
+        # 1. Risk matching
+        if risk_score == 2:  # High stress
+            if "anxiety" in (doc.tags or ""):
+                score += 3
+            if "depression" in (doc.tags or ""):
+                score += 3
+        elif risk_score == 1:
+            score += 2
+        else:
+            score += 1
+
+        # 2. Rating weight
+        score += (doc.rating or 4) * 1.5
+
+        # 3. Experience weight
+        score += (doc.experience_years or 5) * 0.5
+
+        scored.append((score, doc))
+
+    # sort by score descending
+    scored.sort(key=lambda x: x[0], reverse=True)
+
+    return [doc for score, doc in scored[:3]]
 
 
 # ── Routes ───────────────────────────────────────────────────────────────────
@@ -268,11 +304,21 @@ def questionnaire():
 @login_required
 def result(response_id):
     resp = QuestionnaireResponse.query.get_or_404(response_id)
+
     if resp.user_id != current_user.id and not current_user.is_admin:
         flash('Access denied.', 'danger')
         return redirect(url_for('dashboard'))
+
     color = RISK_COLORS.get(resp.risk_score, 'info')
-    return render_template('result.html', resp=resp, color=color)
+
+    recommended_doctors = recommend_doctors(resp.risk_score)
+
+    return render_template(
+        'result.html',
+        resp=resp,
+        color=color,
+        recommended_doctors=recommended_doctors
+    )
 
 
 @app.route('/appointments', methods=['GET', 'POST'])
@@ -360,7 +406,10 @@ def seed_doctors():
                 phone="+91 91006 39486",
                 email="karlamindcenter@gmail.com",
                 about="Science-led psychiatry and human-centered care. "
-                      "Specializes in anxiety, depression, OCD and stress management."
+                      "Specializes in anxiety, depression, OCD and stress management.",
+                rating=4.6,
+                experience_years=8,
+                tags="anxiety,depression,stress,ocd"
             ),
             Doctor(
                 name="Yashoda Hospitals",
@@ -370,7 +419,10 @@ def seed_doctors():
                 phone="+91 40 4567 4567 / +91 80659 06200",
                 email=None,
                 about="Multi-specialty care with a dedicated team of psychiatric doctors. "
-                      "Handles complex psychiatric and neurological conditions."
+                      "Handles complex psychiatric and neurological conditions.",
+                rating=4.5,
+                experience_years=15,
+                tags="depression,stress,psychosis"
             ),
             Doctor(
                 name="Asha Hospital",
@@ -380,7 +432,10 @@ def seed_doctors():
                 phone="+91 96666 55558",
                 email=None,
                 about="Renowned for psychiatric care and addiction treatment. "
-                      "One of Hyderabad's most trusted mental health facilities."
+                      "One of Hyderabad's most trusted mental health facilities.",
+                rating=4.8,
+                experience_years=20,
+                tags="addiction,depression,anxiety,stress"
             ),
             # ── Individual Psychiatrists ──────────────────────────────────
             Doctor(
@@ -391,7 +446,10 @@ def seed_doctors():
                 phone="+91 96666 55558",
                 email=None,
                 about="Senior Psychiatrist at Asha Hospital. "
-                      "Specializes in mood disorders, anxiety and stress-related conditions."
+                      "Specializes in mood disorders, anxiety and stress-related conditions.",
+                rating=4.7,
+                experience_years=12,
+                tags="anxiety,stress,depression"
             ),
             Doctor(
                 name="Dr. Srinivas K.",
@@ -401,7 +459,10 @@ def seed_doctors():
                 phone="+91 91006 39486",
                 email="karlamindcenter@gmail.com",
                 about="Consultant at Karla Mind Center. "
-                      "Experienced in science-led psychiatric treatment and therapy."
+                      "Experienced in science-led psychiatric treatment and therapy.",
+                rating=4.5,
+                experience_years=7,
+                tags="anxiety,depression,stress,ocd"
             ),
             Doctor(
                 name="Dr. Ashok K. Alimchandani",
@@ -411,7 +472,10 @@ def seed_doctors():
                 phone="Book via Apollo Hospitals website",
                 email=None,
                 about="Senior Psychiatrist at Apollo Health City. "
-                      "Book appointments online via the Apollo Hospitals portal."
+                      "Book appointments online via the Apollo Hospitals portal.",
+                rating=4.9,
+                experience_years=25,
+                tags="anxiety,depression,stress,bipolar"
             ),
             Doctor(
                 name="Dr. Praveen Kumar Chintapanti",
@@ -421,7 +485,10 @@ def seed_doctors():
                 phone="Book via Apollo Hospitals website",
                 email=None,
                 about="Consultant Psychiatrist at Apollo Health City. "
-                      "Available for in-person and online consultations via Apollo portal."
+                      "Available for in-person and online consultations via Apollo portal.",
+                rating=4.6,
+                experience_years=10,
+                tags="anxiety,stress,depression,therapy"
             ),
             Doctor(
                 name="Dr. Mazher Ali",
@@ -431,12 +498,15 @@ def seed_doctors():
                 phone="Contact CARE Hospitals reception",
                 email=None,
                 about="Senior Consultant Psychiatrist at CARE Hospitals Banjara Hills. "
-                      "Extensive experience in adult psychiatry and mental health care."
+                      "Extensive experience in adult psychiatry and mental health care.",
+                rating=4.8,
+                experience_years=18,
+                tags="depression,psychosis,anxiety,stress"
             ),
         ]
         db.session.add_all(doctors)
         db.session.commit()
-        print("✅ Real Hyderabad doctors seeded.")
+        print("Success: Real Hyderabad doctors seeded.")
 
 
 def create_admin():
@@ -445,7 +515,7 @@ def create_admin():
         admin_user.set_password('admin123')
         db.session.add(admin_user)
         db.session.commit()
-        print("✅ Admin user created: admin@mhsystem.com / admin123")
+        print("Success: Admin user created: admin@mhsystem.com / admin123")
 
 
 with app.app_context():
