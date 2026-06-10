@@ -122,6 +122,7 @@
 const labels = [{% for r in responses|reverse %}"{{ r.submitted_at.strftime('%d %b') }}"{% if not loop.last %},{% endif %}{% endfor %}];
 const stressData = [{% for r in responses|reverse %}{{ r.stress_level }}{% if not loop.last %},{% endif %}{% endfor %}];
 const moodData   = [{% for r in responses|reverse %}{{ r.mood_score }}{% if not loop.last %},{% endif %}{% endfor %}];
+const riskData   = [{% for r in responses|reverse %}{% if r.risk_score == 0 %}2{% elif r.risk_score == 1 %}5{% elif r.risk_score == 2 %}8{% else %}10{% endif %}{% if not loop.last %},{% endif %}{% endfor %}];
 
 const ctx = document.getElementById('trendChart');
 if(ctx){
@@ -130,12 +131,20 @@ if(ctx){
     data: {
       labels,
       datasets: [
-        { label: 'Stress Level', data: stressData, borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.1)', tension: 0.4, fill: true },
-        { label: 'Mood Score',   data: moodData,   borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,0.1)',  tension: 0.4, fill: true }
+        { label: 'Risk Level (Scaled 1-10)', data: riskData, borderColor: '#a78bfa', backgroundColor: 'rgba(167,139,250,0.05)', tension: 0.4, fill: true },
+        { label: 'Stress Level', data: stressData, borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.05)', tension: 0.4, fill: true },
+        { label: 'Mood Score',   data: moodData,   borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,0.05)',  tension: 0.4, fill: true }
       ]
     },
-    options: { responsive: true, plugins: { legend: { labels: { color: '#e2e8f0' } } },
-      scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' }, min: 0, max: 10 } }
+    options: { 
+      responsive: true, 
+      plugins: { 
+        legend: { labels: { color: '#e2e8f0' } } 
+      },
+      scales: { 
+        x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.1)' } }, 
+        y: { ticks: { color: '#94a3b8' }, min: 0, max: 10, grid: { color: 'rgba(148,163,184,0.1)' } } 
+      }
     }
   });
 }
@@ -143,9 +152,12 @@ if(ctx){
 </script>
 
 {% if responses|length > 1 %}
-<div class="history-section">
-  <h2>Wellbeing Trends</h2>
-  <canvas id="trendChart" height="100"></canvas>
+<div class="history-section chart-card-container">
+  <h2>Wellness & Risk Trends Over Time</h2>
+  <p class="section-sub" style="margin-bottom:15px; color: var(--text-secondary);">Visualize stress, mood, and overall mental health risk changes across successive assessments.</p>
+  <div style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+    <canvas id="trendChart" height="80"></canvas>
+  </div>
 </div>
 {% endif %}
 {% endblock %}

@@ -4,10 +4,32 @@
 {% block content %}
 <div class="result-page">
 
+  <!-- Email Report Notification -->
+  <div class="email-notify-banner">
+    <span class="enb-icon">📧</span>
+    <span class="enb-text">A copy of your mental health report and personalized recovery plan has been compiled and emailed to your inbox.</span>
+  </div>
+
+  <!-- Crisis Intervention Banner (Upgrade 7) -->
+  {% if resp.crisis_detected %}
+  <div class="crisis-alert-banner">
+    <div class="cab-icon">🚨</div>
+    <div class="cab-content">
+      <h3>Crisis Support Resources — You Are Not Alone</h3>
+      <p>Your assessment indicates you are navigating an extremely difficult moment. Immediate safety and support are critical. Please consider reaching out to the free, confidential local support systems listed below:</p>
+      <ul class="helpline-list">
+        <li>📞 <strong>Tele-MANAS (Govt of India):</strong> <a href="tel:14416">14416</a> or <a href="tel:18008914416">1800-891-4416</a> (24/7 Helpline)</li>
+        <li>📞 <strong>Kiran Mental Health Helpline:</strong> <a href="tel:18005990019">1800-599-0019</a> (Govt Support)</li>
+        <li>📞 <strong>Vandrevala Foundation Helpline:</strong> <a href="tel:919999666555">+91 9999 666 555</a> (24/7 Counseling)</li>
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="result-card result-{{ resp.risk_score }}">
     <div class="result-header">
       <div class="result-icon">
-        {% if resp.risk_score == 0 %}💚{% elif resp.risk_score == 1 %}🟡{% else %}🔴{% endif %}
+        {% if resp.risk_score == 0 %}💚{% elif resp.risk_score == 1 %}🟡{% elif resp.risk_score == 2 %}🔴{% else %}🚨{% endif %}
       </div>
       <h1>Your Mental Health Risk Level</h1>
       <div class="risk-level-badge badge-{{ resp.risk_score }}">
@@ -45,14 +67,103 @@
       </div>
     </div>
 
+    <!-- Sentiment Analysis Overview (Upgrade 6) -->
+    <div class="sentiment-overview-box">
+      <div class="sob-title">💬 Open-Text Sentiment Insights:</div>
+      <div class="sob-content">
+        <span>Detected Emotional State: <strong>{{ resp.sentiment_label }}</strong></span>
+        {% if resp.sentiment_score != 0.0 %}
+        <span class="sob-score">Score: <strong>{{ ((resp.sentiment_score + 1.0) / 2.0 * 100) | round(1) }}% Positive</strong></span>
+        {% endif %}
+      </div>
+    </div>
+
     <!-- Radar Chart -->
     <canvas id="radarChart" class="radar-chart"></canvas>
 
+    <!-- Explainable AI Section (Upgrade 2) -->
+    {% if explain_ai %}
+    <div class="explainable-ai-section">
+      <h3>📈 Why was your risk classified as {{ resp.risk_level }}?</h3>
+      <p class="section-sub">Machine Learning feature contribution breakdown for risk model prediction</p>
+      <div class="explain-bars">
+        {% for feature, percentage in explain_ai.items() %}
+        <div class="explain-bar-item">
+          <div class="ebi-label">
+            <span>{{ feature }}</span>
+            <span class="ebi-val">+{{ percentage }}% risk impact</span>
+          </div>
+          <div class="ebi-progress">
+            <div class="ebi-fill fill-{{ resp.risk_score }}" style="width: {{ percentage }}%"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Recommendation -->
     <div class="recommendation-box">
-      <h2>💡 Recommendation</h2>
+      <h2>💡 Clinician Recommendation</h2>
       <p>{{ resp.recommendation }}</p>
     </div>
+
+    <!-- Personalized Recovery Plan (Upgrade 1) -->
+    <div class="recovery-plan-section">
+      <h3>🌱 Your Personalized Recovery Plan</h3>
+      <p class="section-sub">Daily goals curated to strengthen your mental wellbeing</p>
+      
+      <div class="plan-cards-grid">
+        <div class="plan-card">
+          <span class="pc-icon">😴</span>
+          <div class="pc-content">
+            <h4>Sleep Goal</h4>
+            <p>Aim for <strong>{{ resp.sleep_goal or 7.5 }} hours</strong> of rest tonight.</p>
+          </div>
+        </div>
+        <div class="plan-card">
+          <span class="pc-icon">🚶</span>
+          <div class="pc-content">
+            <h4>Daily Walk</h4>
+            <p>Take a stroll or hike for <strong>{{ resp.walk_goal or 20 }} minutes</strong> today.</p>
+          </div>
+        </div>
+        <div class="plan-card">
+          <span class="pc-icon">🧘</span>
+          <div class="pc-content">
+            <h4>Mindfulness Goal</h4>
+            <p>Spend <strong>{{ resp.meditation_goal or 10 }} minutes</strong> on meditation/breathing.</p>
+          </div>
+        </div>
+        <div class="plan-card">
+          <span class="pc-icon">✍️</span>
+          <div class="pc-content">
+            <h4>Journal Reflection</h4>
+            <p>Spend <strong>{{ resp.journaling_goal or 5 }} minutes</strong> writing your thoughts down.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resource Recommendation Engine (Upgrade 5) -->
+    {% if rec_resources %}
+    <div class="resources-recommendation-section">
+      <h3>📚 Recommended Self-Help Resources</h3>
+      <p class="section-sub">Clinically reviewed exercises and planning guides matched to your metrics</p>
+      <div class="resources-grid">
+        {% for resource in rec_resources %}
+        <div class="resource-card">
+          <div class="rc-icon">📖</div>
+          <div class="rc-info">
+            <h4>{{ resource.title }}</h4>
+            <p>{{ resource.desc }}</p>
+            <a href="{{ resource.link }}" target="_blank" class="rc-link">Explore Guide ↗</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
     {% if resp.feelings_text %}
     <div class="feelings-box">
@@ -61,10 +172,21 @@
     </div>
     {% endif %}
 
-    <!-- Recommended Doctors -->
+    <!-- Recommended Support Section (Upgrade 4) -->
     <div class="recommended-doctors-section">
-      <h3>👨‍⚕️ Recommended Doctors for You</h3>
-      <p class="section-sub">AI-recommended psychiatrists matched to your risk level and conditions</p>
+      {% if resp.risk_score == 0 %}
+      <h3>👨‍⚕️ Support Recommendation</h3>
+      <p class="section-sub">Based on your Low Risk score, clinical consults are not currently required.</p>
+      <div class="low-risk-support-card">
+        <div class="lrsc-icon">🌟</div>
+        <div class="lrsc-info">
+          <h4>Continue Self-Guided Wellness</h4>
+          <p>Your self-care routines are working wonderfully. Keep utilizing your recovery plan and self-guided wellness guides. If stress rises, our AI wellness assistant is always available, and you can retake the assessment at any time.</p>
+        </div>
+      </div>
+      {% else %}
+      <h3>👨‍⚕️ Recommended Professional Support</h3>
+      <p class="section-sub">AI-recommended professionals matched to your risk level and symptoms</p>
       <div class="rec-doctors-list">
         {% for doc in recommended_doctors %}
         <div class="rec-doctor-card">
@@ -86,6 +208,7 @@
         </div>
         {% endfor %}
       </div>
+      {% endif %}
     </div>
 
     <!-- Actions -->

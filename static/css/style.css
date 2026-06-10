@@ -978,6 +978,455 @@ img { max-width: 100%; }
   .steps { flex-direction: column; }
   .step-arrow { transform: rotate(90deg); }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   NEW UPGRADES ADDITIONS
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Email Notification Banner */
+.email-notify-banner {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px dashed var(--accent);
+  color: var(--accent-light);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+.enb-icon { font-size: 1.25rem; }
+
+/* Crisis Intervention Alert Banner */
+.crisis-alert-banner {
+  background: rgba(239, 68, 68, 0.08);
+  border: 2px solid var(--red);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);
+  animation: pulseCrisis 2s infinite ease-in-out;
+}
+@keyframes pulseCrisis {
+  0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); }
+  50% { box-shadow: 0 0 35px rgba(239, 68, 68, 0.35); }
+}
+.cab-icon { font-size: 2.2rem; flex-shrink: 0; }
+.cab-content h3 {
+  font-family: var(--font-display);
+  color: var(--red);
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+.cab-content p {
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.helpline-list {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.helpline-list li {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.helpline-list a {
+  color: var(--green);
+  font-weight: 700;
+  border-bottom: 1px dotted var(--green);
+}
+.helpline-list a:hover {
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+/* Sentiment Insights Overview */
+.sentiment-overview-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sob-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.sob-content {
+  display: flex;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+.sob-score {
+  color: var(--accent-light);
+  border-left: 1px solid var(--border);
+  padding-left: 16px;
+}
+
+/* Explainable AI Stats */
+.explainable-ai-section {
+  margin-top: 32px;
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+}
+.explainable-ai-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.explainable-ai-section .section-sub {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+.explain-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.01);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+.explain-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ebi-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.ebi-val {
+  color: var(--accent-light);
+}
+.ebi-progress {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 100px;
+  height: 8px;
+  overflow: hidden;
+}
+.ebi-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 1s ease-in-out;
+}
+.ebi-fill.fill-0 { background: linear-gradient(90deg, var(--green), #059669); }
+.ebi-fill.fill-1 { background: linear-gradient(90deg, var(--yellow), #f97316); }
+.ebi-fill.fill-2 { background: linear-gradient(90deg, var(--red), #dc2626); }
+.ebi-fill.fill-3 { background: linear-gradient(90deg, #d946ef, #7c3aed); }
+
+/* Personalized Recovery Plan */
+.recovery-plan-section {
+  margin-top: 36px;
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+}
+.recovery-plan-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.recovery-plan-section .section-sub {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.plan-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .plan-cards-grid { grid-template-columns: 1fr; }
+}
+.plan-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: var(--transition);
+}
+.plan-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-hover);
+}
+.pc-icon {
+  font-size: 1.6rem;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 10px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  line-height: 1;
+}
+.pc-content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.pc-content p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Resource Recommendations Section */
+.resources-recommendation-section {
+  margin-top: 36px;
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+}
+.resources-recommendation-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.resources-recommendation-section .section-sub {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .resources-grid { grid-template-columns: 1fr; }
+}
+.resource-card {
+  background: rgba(99, 102, 241, 0.03);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: var(--transition);
+}
+.resource-card:hover {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.06);
+}
+.rc-icon {
+  font-size: 1.5rem;
+  color: var(--accent-light);
+  flex-shrink: 0;
+}
+.rc-info h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.rc-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.rc-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--green);
+}
+.rc-link:hover {
+  text-decoration: underline;
+}
+
+/* Low Risk Support Card */
+.low-risk-support-card {
+  background: rgba(52, 211, 153, 0.04);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.lrsc-icon {
+  font-size: 1.8rem;
+  color: var(--green);
+  flex-shrink: 0;
+}
+.lrsc-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.lrsc-info p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Critical Risk styling additions */
+.risk-banner.risk-3 {
+  background: rgba(217, 70, 239, 0.08);
+  border-color: rgba(217, 70, 239, 0.35);
+  box-shadow: 0 0 25px rgba(217, 70, 239, 0.15);
+}
+.badge-3, .risk-badge-3 {
+  background: rgba(217, 70, 239, 0.2);
+  color: #f472b6;
+  border: 1px solid rgba(217, 70, 239, 0.45);
+}
+
+/* Chatbot simulated notification and header additions */
+.chatbot-demo-banner {
+  background: rgba(251, 191, 36, 0.08);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+  padding: 8px 24px;
+  font-size: 0.8rem;
+  color: var(--yellow);
+  text-align: center;
+}
+.chatbot-demo-banner code {
+  background: rgba(251, 191, 36, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+.btn-crisis-call {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: var(--red);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-crisis-call:hover {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+/* Chat bubble styling lists */
+.msg-bubble ul {
+  padding-left: 18px;
+  margin-top: 6px;
+}
+.msg-bubble li {
+  margin-bottom: 4px;
+  font-size: 0.88rem;
+}
+
+/* Modal Popup Backdrop & Dialog */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 30, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+  overflow: hidden;
+  animation: zoomIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes zoomIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.modal-header h3 {
+  font-family: var(--font-display);
+  color: var(--red);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.modal-close-btn:hover { color: var(--red); }
+.modal-body {
+  padding: 24px;
+}
+.modal-body p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.modal-helpline-list {
+  list-style: none;
+  padding-left: 0;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modal-helpline-list li {
+  font-size: 0.88rem;
+}
+.modal-helpline-list a {
+  color: var(--green);
+  font-weight: 700;
+}
+.modal-note {
+  font-style: italic;
+  text-align: center;
+  color: var(--accent-light) !important;
+  font-size: 0.85rem !important;
+}
+
 @media (max-width: 600px) {
   .hero-title { font-size: 2.2rem; }
   .features-grid { grid-template-columns: 1fr; }

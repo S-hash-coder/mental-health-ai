@@ -52,4 +52,4 @@ os.makedirs("models", exist_ok=True)
 with open("models/risk_model.pkl", "wb") as f:
     pickle.dump(clf, f)
 
-print("✅ Model saved to models/risk_model.pkl")
+print("[SUCCESS] Model saved to models/risk_model.pkl")

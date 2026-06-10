@@ -1,6 +1,12 @@
+# Python cache
 __pycache__/
 *.pyc
 
-instance/
+# Virtual environment
 venv/
+
+# Environment variables
 .env
+
+# Instance folder (SQLite DB, logs, etc.)
+instance/
